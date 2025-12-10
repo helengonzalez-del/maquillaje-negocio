@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Dashboard Ventas</title>
+</head>
+<body>
+    <h1>Dashboard de Ventas</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Producto</th>
+                <th>Monto</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody id="tabla"></tbody>
+    </table>
+
+    <script src="config.js"></script>
+
+    <script>
+        async function cargar() {
+            const resp = await fetch(
+                `${SUPABASE_URL}/rest/v1/ventas_kits?select=*`,
+                {
+                    headers: {
+                        apikey: SUPABASE_KEY,
+                        Authorization: "Bearer " + SUPABASE_KEY,
+                    },
+                }
+            );
+
+            const data = await resp.json();
+            const tbody = document.getElementById("tabla");
+            tbody.innerHTML = "";
+
+            data.forEach((r) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${r.cliente}</td>
+                        <td>${r.producto}</td>
+                        <td>$${r.monto}</td>
+                        <td>${r.fecha}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        cargar();
+    </script>
+</body>
+</html>
