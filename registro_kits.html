@@ -26,9 +26,12 @@
         <button type="submit">Registrar</button>
     </form>
 
+    <!-- Cargar config.js -->
+    <script src="config.js"></script>
+
     <script>
-        const url = "https://utoqmvqcjlkporkbnarf.supabase.co/rest/v1/kits_maquillaje";
-        const apiKey = "sb_publishable_g0zovqLSKL_vvi6BVUpCRA_vynR_Wh1";
+        const URL = SUPABASE_URL + "/rest/v1/kits_maquillaje";
+        const API_KEY = SUPABASE_KEY;
 
         document.getElementById("registroForm").addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -41,12 +44,12 @@
                 fecha_compra: document.getElementById("fecha_compra").value
             };
 
-            const resp = await fetch(url, {
+            const resp = await fetch(URL, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "apikey": apiKey,
-                    "Authorization": "Bearer " + apiKey
+                    "apikey": API_KEY,
+                    "Authorization": "Bearer " + API_KEY
                 },
                 body: JSON.stringify(data)
             });
