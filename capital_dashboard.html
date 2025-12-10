@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard del Capital</title>
+    <meta charset="UTF-8" />
+    <title>Dashboard Capital</title>
 </head>
 <body>
     <h1>Dashboard del Capital</h1>
@@ -24,25 +23,29 @@
     <h2>Resumen</h2>
     <p id="resumen"></p>
 
-    <script>
-        const url = "https://utoqmvqcjlkporkbnarf.supabase.co/rest/v1/control_capital?select=*";
-        const apiKey = "sb_publishable_g0zovqLSKL_vvi6BVUpCRA_vynR_Wh1";
+    <!-- Carga tu API LOCAL -->
+    <script src="config.js"></script>
 
+    <script>
         async function cargar() {
+            const url = `${SUPABASE_URL}/rest/v1/control_capital?select=*`;
+
             const resp = await fetch(url, {
                 headers: {
-                    "apikey": apiKey,
-                    "Authorization": "Bearer " + apiKey
-                }
+                    apikey: SUPABASE_KEY,
+                    Authorization: "Bearer " + SUPABASE_KEY,
+                },
             });
 
             const data = await resp.json();
             const tbody = document.getElementById("tabla");
             tbody.innerHTML = "";
 
-            let totalIngresado = 0, totalPrestado = 0, totalDevuelto = 0;
+            let totalIngresado = 0,
+                totalPrestado = 0,
+                totalDevuelto = 0;
 
-            data.forEach(r => {
+            data.forEach((r) => {
                 totalIngresado += r.capital_ingresado;
                 totalPrestado += r.capital_prestado;
                 totalDevuelto += r.capital_devuelto;
@@ -54,14 +57,16 @@
                         <td>$${r.capital_prestado}</td>
                         <td>$${r.capital_devuelto}</td>
                         <td>${r.fecha_ingreso}</td>
-                    </tr>`;
+                    </tr>
+                `;
             });
 
-            document.getElementById("resumen").innerHTML =
-                `Total ingresado: $${totalIngresado}<br>
-                 Total prestado: $${totalPrestado}<br>
-                 Total devuelto: $${totalDevuelto}<br>
-                 <b>Restante real: $${totalIngresado - (totalPrestado - totalDevuelto)}</b>`;
+            document.getElementById("resumen").innerHTML = `
+                Total ingresado: $${totalIngresado}<br>
+                Total prestado: $${totalPrestado}<br>
+                Total devuelto: $${totalDevuelto}<br>
+                <b>Restante real: $${totalIngresado - (totalPrestado - totalDevuelto)}</b>
+            `;
         }
 
         cargar();
