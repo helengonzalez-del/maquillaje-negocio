@@ -1,24 +1,113 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Capital</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de Capital</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #F3F4F6;
+        padding: 20px;
+    }
+    .card {
+        max-width: 450px;
+        margin: auto;
+        background: white;
+        padding: 22px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #3B82F6;
+    }
+    label {
+        font-weight: bold;
+        color: #374151;
+    }
+    input, button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 6px;
+        border-radius: 8px;
+        border: 1px solid #D1D5DB;
+        font-size: 15px;
+    }
+    button {
+        margin-top: 18px;
+        background: #3B82F6;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #2563EB;
+    }
+</style>
 </head>
+
 <body>
-    <h1>Registrar Capital</h1>
 
-    <form id="capitalForm">
-        <label>Nombre (Helen o Cristina):</label>
-        <input type="text" id="nombre" required><br><br>
+<div class="card">
+<h1>Registrar Capital</h1>
 
-        <label>Capital Ingresado:</label>
-        <input type="number" step="0.01" id="capital_ingresado" required><br><br>
+<form id="capitalForm">
 
-        <label>Fecha:</label>
-        <input type="date" id="fecha_ingreso" required><br><br>
+    <label>Nombre:</label>
+    <input type="text" id="nombre" required>
 
-        <label>Capital Prestado:</label>
-        <input type="number" step="0.01" id="capital_prestado"><br><br>
+    <label>Capital Ingresado:</label>
+    <input type="number" id="capital_ingresado" step="0.01" required>
+
+    <label>Fecha:</label>
+    <input type="date" id="fecha_ingreso" required>
+
+    <label>Capital Prestado:</label>
+    <input type="number" id="capital_prestado" step="0.01">
+
+    <label>Capital Devuelto:</label>
+    <input type="number" id="capital_devuelto" step="0.01">
+
+    <button type="submit">Registrar</button>
+</form>
+</div>
+
+<script src="config.js"></script>
+
+<script>
+const URL = SUPABASE_URL + "/rest/v1/control_capital";
+const API_KEY = SUPABASE_KEY;
+
+document.getElementById("capitalForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const data = {
+        nombre_usuario: nombre.value,
+        capital_ingresado: parseFloat(capital_ingresado.value),
+        fecha_ingreso: fecha_ingreso.value,
+        capital_prestado: parseFloat(capital_prestado.value) || 0,
+        capital_devuelto: parseFloat(capital_devuelto.value) || 0
+    };
+
+    const resp = await fetch(URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "apikey": API_KEY,
+            "Authorization": "Bearer " + API_KEY
+        },
+        body: JSON.stringify(data)
+    });
+
+    alert(resp.ok ? "Registro exitoso" : "Error al registrar");
+    if (resp.ok) e.target.reset();
+});
+</script>
+
+</body>
+</html>
+
 
 
