@@ -1,55 +1,55 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Kits</title>
+    <meta charset="UTF-8" />
+    <title>Dashboard Kits</title>
 </head>
 <body>
-    <h1>Dashboard de Kits Registrados</h1>
+    <h1>Dashboard de Kits de Maquillaje</h1>
 
     <table border="1">
         <thead>
             <tr>
-                <th>Nombre</th>
-                <th>Compra</th>
-                <th>Venta</th>
-                <th>Cant.</th>
+                <th>Producto</th>
+                <th>Costo</th>
+                <th>Stock</th>
                 <th>Fecha</th>
             </tr>
         </thead>
         <tbody id="tabla"></tbody>
     </table>
 
-    <script>
-        const url = "https://utoqmvqcjlkporkbnarf.supabase.co/rest/v1/kits_maquillaje?select=*";
-        const apiKey = "sb_publishable_g0zovqLSKL_vvi6BVUpCRA_vynR_Wh1";
+    <script src="config.js"></script>
 
-        async function cargarDatos() {
-            const resp = await fetch(url, {
-                headers: {
-                    "apikey": apiKey,
-                    "Authorization": "Bearer " + apiKey
+    <script>
+        async function cargar() {
+            const resp = await fetch(
+                `${SUPABASE_URL}/rest/v1/kits_maquillaje?select=*`,
+                {
+                    headers: {
+                        apikey: SUPABASE_KEY,
+                        Authorization: "Bearer " + SUPABASE_KEY,
+                    },
                 }
-            });
+            );
 
             const data = await resp.json();
             const tbody = document.getElementById("tabla");
             tbody.innerHTML = "";
 
-            data.forEach(k => {
+            data.forEach((r) => {
                 tbody.innerHTML += `
                     <tr>
-                        <td>${k.nombre_kit}</td>
-                        <td>$${k.precio_compra}</td>
-                        <td>$${k.precio_venta}</td>
-                        <td>${k.cantidad_comprada}</td>
-                        <td>${k.fecha_compra}</td>
-                    </tr>`;
+                        <td>${r.producto}</td>
+                        <td>$${r.costo}</td>
+                        <td>${r.stock}</td>
+                        <td>${r.fecha}</td>
+                    </tr>
+                `;
             });
         }
 
-        cargarDatos();
+        cargar();
     </script>
 </body>
 </html>
