@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Capital</title>
+</head>
+<body>
+    <h1>Registrar Capital</h1>
+
+    <form id="capitalForm">
+        <label>Nombre (Helen o Cristina):</label>
+        <input type="text" id="nombre" required><br><br>
+
+        <label>Capital Ingresado:</label>
+        <input type="number" step="0.01" id="capital_ingresado" required><br><br>
+
+        <label>Fecha:</label>
+        <input type="date" id="fecha_ingreso" required><br><br>
+
+        <label>Capital Prestado:</label>
+        <input type="number" step="0.01" id="capital_prestado"><br><br>
+
+        <label>Capital Devuelto:</label>
+        <input type="number" step="0.01" id="capital_devuelto"><br><br>
+
+        <button type="submit">Registrar</button>
+    </form>
+
+    <script>
+        const url = "https://utoqmvqcjlkporkbnarf.supabase.co/rest/v1/control_capital";
+        const apiKey = "sb_publishable_g0zovqLSKL_vvi6BVUpCRA_vynR_Wh1";
+
+        document.getElementById("capitalForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const data = {
+                nombre_usuario: document.getElementById("nombre").value,
+                capital_ingresado: parseFloat(document.getElementById("capital_ingresado").value),
+                fecha_ingreso: document.getElementById("fecha_ingreso").value,
+                capital_prestado: parseFloat(document.getElementById("capital_prestado").value) || 0,
+                capital_devuelto: parseFloat(document.getElementById("capital_devuelto").value) || 0
+            };
+
+            const resp = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "apikey": apiKey,
+                    "Authorization": "Bearer " + apiKey
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (resp.ok) {
+                alert("Capital registrado con éxito");
+                e.target.reset();
+            } else {
+                alert("Error al registrar capital");
+            }
+        });
+    </script>
+</body>
+</html>

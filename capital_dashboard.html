@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard del Capital</title>
+</head>
+<body>
+    <h1>Dashboard del Capital</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Ingresado</th>
+                <th>Prestado</th>
+                <th>Devuelto</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody id="tabla"></tbody>
+    </table>
+
+    <h2>Resumen</h2>
+    <p id="resumen"></p>
+
+    <script>
+        const url = "https://utoqmvqcjlkporkbnarf.supabase.co/rest/v1/control_capital?select=*";
+        const apiKey = "sb_publishable_g0zovqLSKL_vvi6BVUpCRA_vynR_Wh1";
+
+        async function cargar() {
+            const resp = await fetch(url, {
+                headers: {
+                    "apikey": apiKey,
+                    "Authorization": "Bearer " + apiKey
+                }
+            });
+
+            const data = await resp.json();
+            const tbody = document.getElementById("tabla");
+            tbody.innerHTML = "";
+
+            let totalIngresado = 0, totalPrestado = 0, totalDevuelto = 0;
+
+            data.forEach(r => {
+                totalIngresado += r.capital_ingresado;
+                totalPrestado += r.capital_prestado;
+                totalDevuelto += r.capital_devuelto;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${r.nombre_usuario}</td>
+                        <td>$${r.capital_ingresado}</td>
+                        <td>$${r.capital_prestado}</td>
+                        <td>$${r.capital_devuelto}</td>
+                        <td>${r.fecha_ingreso}</td>
+                    </tr>`;
+            });
+
+            document.getElementById("resumen").innerHTML =
+                `Total ingresado: $${totalIngresado}<br>
+                 Total prestado: $${totalPrestado}<br>
+                 Total devuelto: $${totalDevuelto}<br>
+                 <b>Restante real: $${totalIngresado - (totalPrestado - totalDevuelto)}</b>`;
+        }
+
+        cargar();
+    </script>
+</body>
+</html>

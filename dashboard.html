@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Kits</title>
+</head>
+<body>
+    <h1>Dashboard de Kits Registrados</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Compra</th>
+                <th>Venta</th>
+                <th>Cant.</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody id="tabla"></tbody>
+    </table>
+
+    <script>
+        const url = "https://utoqmvqcjlkporkbnarf.supabase.co/rest/v1/kits_maquillaje?select=*";
+        const apiKey = "sb_publishable_g0zovqLSKL_vvi6BVUpCRA_vynR_Wh1";
+
+        async function cargarDatos() {
+            const resp = await fetch(url, {
+                headers: {
+                    "apikey": apiKey,
+                    "Authorization": "Bearer " + apiKey
+                }
+            });
+
+            const data = await resp.json();
+            const tbody = document.getElementById("tabla");
+            tbody.innerHTML = "";
+
+            data.forEach(k => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${k.nombre_kit}</td>
+                        <td>$${k.precio_compra}</td>
+                        <td>$${k.precio_venta}</td>
+                        <td>${k.cantidad_comprada}</td>
+                        <td>${k.fecha_compra}</td>
+                    </tr>`;
+            });
+        }
+
+        cargarDatos();
+    </script>
+</body>
+</html>
