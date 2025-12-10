@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Venta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f6ff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            text-align: center;
+            color: #5a2ca0;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 4px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #6936d9;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 18px;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #5528b4;
+        }
+
+        #mensaje {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Registrar Venta</h2>
+
+        <label>Seleccionar Kit:</label>
+        <select id="kit">
+        </select>
+
+        <label>Cantidad Vendida:</label>
+        <input type="number" id="cantidad" min="1">
+
+        <label>Precio Venta Unitario:</label>
+        <input type="number" id="precio" min="1" step="0.01">
+
+        <button onclick="registrarVenta()">Registrar Venta</button>
+
+        <div id="mensaje"></div>
+    </div>
+
+    <script type="module">
+        import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+        import { SUPABASE_URL, SUPABASE_KEY } from "./config.js";
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Cargar kits disponibles
+        async function cargarKits() {
+            const { data, error } = await supabase.from("kits_maquillaje").select("*");
+
+            const combo = document.getElementById("kit");
+            combo.innerHTML = "";
+
+            data.forEach(k => {
+                combo.innerHTML += `<option value="${k.id}">${k.nombre} (Stock: ${k.stock})</option>`;
+            });
+        }
+
+        cargarKits();
+
+        // Registrar venta real
+        async function registrarVenta() {
+            const kit_id = document.getElementById("kit").value;
+            const cantidad_vendida = document.getElementById("cantidad").value;
+            const precio_venta_unitario = document.getElementById("precio").value;
+
+            if (!kit_id || !cantidad_vendida || !precio_venta_unitario) {
+                document.getElementById("mensaje").textContent = "Completa todos los campos.";
+                return;
+            }
+
+            const { error } = await supabase.from("ventas_kits").insert({
+                kit_id,
+                cantidad_vendida,
+                precio_venta_unitario
+            });
+
+            if (error) {
+                document.getElementById("mensaje").textContent = "Error: " + error.message;
+                return;
+            }
+
+            document.getElementById("mensaje").textContent = "Venta registrada correctamente ✔";
+            document.getElementById("cantidad").value = "";
+            document.getElementById("precio").value = "";
+
+            cargarKits();
+        }
+    </script>
+</body>
+</html>
+
+
+

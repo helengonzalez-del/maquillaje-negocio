@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Registrar Venta</title>
+
+<style>
+body{
+    margin:0;background:#f3f4f6;font-family:Inter,system-ui;
+}
+.container{
+    max-width:500px;margin:40px auto;background:white;padding:24px;border-radius:16px;
+    box-shadow:0 8px 30px rgba(0,0,0,0.08);
+}
+h1{
+    margin:0 0 20px;font-size:24px;color:#8B5CF6;text-align:center;
+}
+label{
+    font-size:14px;color:#374151;font-weight:600;display:block;margin-top:15px;
+}
+input,select{
+    width:100%;padding:10px;border-radius:10px;border:1px solid #d1d5db;margin-top:5px;
+    font-size:15px;
+}
+button{
+    width:100%;margin-top:25px;padding:12px;background:#8B5CF6;color:white;border:none;
+    border-radius:10px;font-size:16px;cursor:pointer;font-weight:600;
+}
+button:hover{background:#7C3AED}
+.msg{
+    margin-top:15px;text-align:center;font-size:15px;font-weight:600;
+}
+.success{color:#059669}
+.error{color:#DC2626}
+</style>
+</head>
+
+<body>
+<div class="container">
+    <h1>Registrar Venta</h1>
+
+    <label>Kit vendido</label>
+    <select id="kit"></select>
+
+    <label>Cantidad vendida</label>
+    <input type="number" id="cantidad" min="1">
+
+    <label>Total vendido ($)</label>
+    <input type="number" id="total" step="0.01" min="0">
+
+    <label>Ganancia obtenida ($)</label>
+    <input type="number" id="ganancia" step="0.01" min="0">
+
+    <button onclick="registrarVenta()">Guardar Venta</button>
+
+    <div id="msg" class="msg"></div>
+</div>
+
+<script src="config.js"></script>
+<script>
+const BASE = SUPABASE_URL + "/rest/v1";
+const HEADERS = {
+    apikey: SUPABASE_KEY,
+    Authorization:"Bearer " + SUPABASE_KEY,
+    "Content-Type":"application/json"
+};
+
+async function cargarKits(){
+    const res = await fetch(`${BASE}/kits_maquillaje?select=*`,{headers:HEADERS});
+    const kits = await res.json();
+
+    const sel = document.getElementById("kit");
+    kits.forEach(k=>{
+        const op = document.createElement("option");
+        op.value = k.id;
+        op.textContent = k.nombre_kit;
+        sel.appendChild(op);
+    });
+}
+
+async function registrarVenta(){
+    const kit_id = Number(document.getElementById("kit").value);
+    const cantidad = Number(document.getElementById("cantidad").value);
+    const total = Number(document.getElementById("total").value);
+    const ganancia = Number(document.getElementById("ganancia").value);
+
+    const msg = document.getElementById("msg");
+
+    if(!cantidad || !total){
+        msg.textContent = "Llena todos los campos";
+        msg.className = "msg error";
+        return;
+    }
+
+    const data = {
+        kit_id,
+        cantidad_vendida: cantidad,
+        total_vendido: total,
+        total_ganancia: ganancia,
+        fecha_venta: new Date().toISOString()
+    };
+
+    const res = await fetch(`${BASE}/ventas_kits`,{
+        method:"POST",
+        headers:HEADERS,
+        body:JSON.stringify(data)
+    });
+
+    if(res.ok){
+        msg.textContent = "Venta registrada correctamente ✔️";
+        msg.className = "msg success";
+        document.getElementById("cantidad").value = "";
+        document.getElementById("total").value = "";
+        document.getElementById("ganancia").value = "";
+    } else {
+        msg.textContent = "Error al guardar ❌";
+        msg.className = "msg error";
+    }
+}
+
+cargarKits();
+</script>
+</body>
+</html>
